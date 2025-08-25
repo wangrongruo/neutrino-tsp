@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Kafka
+  kafka:
+    image: crpi-5kio3kylkw6w7p01-vpc.cn-hangzhou.personal.cr.aliyuncs.com/neutrino-tsp/cp-kafka:7.5.3
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    mem_limit: 1g
+    environment:
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:9093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://47.99.70.238:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_LOG_DIRS: '/tmp/kafka-logs'
+
+  # MySQL
+  mysql:
+    image: crpi-5kio3kylkw6w7p01-vpc.cn-hangzhou.personal.cr.aliyuncs.com/neutrino-tsp/mysql:8.0
+    container_name: mysql
+    mem_limit: 1g
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password --innodb_buffer_pool_size=256M --performance_schema=0
+    environment:
+      MYSQL_ROOT_PASSWORD: LZ5UM0NiAODXGiY0R6K4
+      MYSQL_DATABASE: neutrino_tsp
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # Redis
+  redis:
+    image: crpi-5kio3kylkw6w7p01-vpc.cn-hangzhou.personal.cr.aliyuncs.com/neutrino-tsp/redis:6.2-alpine
+    container_name: redis
+    command: redis-server --requirepass LZ5UM0NiAODXGiY0R6K4
+    mem_limit: 256m
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  # InfluxDB
+  influxdb:
+    image: crpi-5kio3kylkw6w7p01-vpc.cn-hangzhou.personal.cr.aliyuncs.com/neutrino-tsp/influxdb:2.7.7-alpine
+    container_name: influxdb
+    mem_limit: 512m
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin_password
+      - DOCKER_INFLUXDB_INIT_ORG=neutrino
+      - DOCKER_INFLUXDB_INIT_BUCKET=tsp_data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my_super_secret_token
+
+  # EMQX
+  emqx:
+    image: crpi-5kio3kylkw6w7p01-vpc.cn-hangzhou.personal.cr.aliyuncs.com/neutrino-tsp/emqx:5.8.2
+    container_name: emqx
+    mem_limit: 512m
+    ports:
+      - "1883:1883"
+      - "18083:18083"
+    environment:
+      # EMQX 5.8.2 使用的是 5.x 系列的配置方式
+      EMQX_AUTH__MNESIA__PASSWORD_HASH: salted_sha256
+
+volumes:
+  mysql-data:
+  redis-data:
+  influxdb-data:

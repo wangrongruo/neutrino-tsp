@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 引入Spring Boot的默认配置 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- 1. 定义属性 -->
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="./logs"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="neutrino-tsp"/>
+
+    <property name="CONSOLE_LOG_PATTERN" value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%15.15t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <!-- 2. 控制台Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 3. 文件滚动Appender (INFO级别) -->
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!--
+          **核心修正：使用正确的滚动策略类 SizeAndTimeBasedRollingPolicy**
+        -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志文件名格式 -->
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}-info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 每个日志文件最大100MB -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 最多保留30天的日志 -->
+            <maxHistory>30</maxHistory>
+            <!-- 所有日志文件总大小不超过10GB -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 4. 文件滚动Appender (ERROR级别) -->
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <!--
+          **核心修正：使用正确的滚动策略类 SizeAndTimeBasedRollingPolicy**
+        -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}-error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 5. 异步Appender (提升性能) -->
+    <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE_INFO"/>
+    </appender>
+    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE_ERROR"/>
+    </appender>
+
+    <!-- 6. 多环境配置 -->
+    <springProfile name="local, dev">
+        <logger name="com.cusc.neutrino" level="DEBUG"/>
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.apache.kafka" level="WARN"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_INFO"/>
+            <appender-ref ref="ASYNC_ERROR"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod, test, uat, pre">
+        <logger name="com.cusc.neutrino" level="INFO"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.apache.kafka" level="WARN"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_INFO"/>
+            <appender-ref ref="ASYNC_ERROR"/>
+        </root>
+    </springProfile>
+
+</configuration>

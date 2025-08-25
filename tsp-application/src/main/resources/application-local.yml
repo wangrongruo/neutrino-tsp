@@ -1,0 +1,42 @@
+# **Spring Boot测试的配置文件**
+spring:
+  datasource:
+    dynamic:
+      primary: dbUser
+      strict: false
+      datasource:
+        dbUser:
+          url: jdbc:mysql://47.99.70.238:3306/neutrino_tsp?serverTimezone=GMT%2B8&useUnicode=true&useSSL=false
+          username: root
+          password: 'LZ5UM0NiAODXGiY0R6K4'
+          driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  redis:
+    host: 47.99.70.238
+    port: 6379
+    password: 'LZ5UM0NiAODXGiY0R6K4'
+
+  kafka:
+    bootstrap-servers: 47.99.70.238:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: neutrino-test-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+# InfluxDB连接信息
+influxdb:
+  url: http://47.99.70.238:8086
+  token: my_super_secret_token
+  org: neutrino
+  bucket: tsp_data
+
+# 日志级别
+logging:
+  level:
+    com.cusc.neutrino: DEBUG
+    org.springframework: INFO
+    com.baomidou: DEBUG # 开启MyBatis-Plus和动态数据源的DEBUG日志，便于观察

@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: tsp-application
+logging:
+  file:
+    path: ./logs
+  level:
+    com.cusc.neutrino: info
+    ## 启动debug日志
+    org.springframework.web: info
+    org.springframework.boot.autoconfigure: info
+# MyBatis-Plus的配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml # 指定Mapper XML文件的位置
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 在控制台打印SQL
+server:
+  port: 8888
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  profiles:
+    active: local

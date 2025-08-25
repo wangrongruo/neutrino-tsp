@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>com.cusc.neutrino</groupId>
+		<artifactId>neutrino-tsp</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<artifactId>tsp-application</artifactId>
+
+	<dependencies>
+		<!-- 内部模块依赖 -->
+		<dependency>
+			<groupId>com.cusc.neutrino</groupId>
+			<artifactId>tsp-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- Spring Boot Starters (核心框架，版本从父pom继承) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+		<!-- 数据库与ORM (版本从父pom继承) -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-generator</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- 时序数据库 -->
+		<dependency>
+			<groupId>com.influxdb</groupId>
+			<artifactId>influxdb-client-java</artifactId>
+		</dependency>
+
+		<!-- Utilities -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

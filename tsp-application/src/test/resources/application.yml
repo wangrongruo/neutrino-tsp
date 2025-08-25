@@ -1,0 +1,57 @@
+# 文件位置: src/test/resources/application.yml
+# 我们不再使用多文档和profile，直接为测试定义一套明确的配置
+
+spring:
+  application:
+    name: tsp-application-test
+  main:
+    allow-circular-references: true
+
+  # **核心修正：使用标准的spring.datasource命名空间定义唯一的数据源**
+  # 动态数据源框架会自动检测到这个标准数据源，并将其作为默认的primary数据源
+  datasource:
+    # **明确指定数据源的名字**
+    name: dbUser
+    url: jdbc:mysql://47.99.70.238:3306/neutrino_tsp?serverTimezone=GMT%2B8&useUnicode=true&useSSL=false
+    username: root
+    password: 'LZ5UM0NiAODXGiY0R6K4'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # **将连接池类型和Druid配置放在这里**
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+
+  # Redis配置
+  redis:
+    host: 47.99.70.238
+    port: 6379
+    password: 'LZ5UM0NiAODXGiY0R6K4'
+
+  # Kafka配置
+  kafka:
+    bootstrap-servers: 47.99.70.238:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: neutrino-test-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
+
+# InfluxDB连接信息
+influxdb:
+  url: http://47.99.70.238:8086
+  token: my_super_secret_token
+  org: neutrino
+  bucket: tsp_data
+
+# 日志级别
+logging:
+  level:
+    com.cusc.neutrino: DEBUG
+    org.springframework: INFO
+    com.baomidou: DEBUG
