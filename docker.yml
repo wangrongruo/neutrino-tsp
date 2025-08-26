@@ -24,6 +24,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
       KAFKA_LOG_DIRS: '/tmp/kafka-logs'
+    volumes:
+      - kafka-data:/var/lib/kafka/data
 
   # MySQL
   mysql:
@@ -79,7 +81,9 @@ services:
       # EMQX 5.8.2 使用的是 5.x 系列的配置方式
       EMQX_AUTH__MNESIA__PASSWORD_HASH: salted_sha256
 
+
 volumes:
+  kafka-data:
   mysql-data:
   redis-data:
   influxdb-data:
